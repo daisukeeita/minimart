@@ -49,7 +49,7 @@ src/main/java/com/acolyptos/minimart/
  mvn exec:java -Dexec.mainClass="com.acolyptos.minimart.Main"
 ```
 
-3. Or make a `build.sh` file to pseudo-automate the commands every to we call the file
+3. Or make a `build.sh` file to pseudo-automate the commands everytime we call the file
 
 ```sh
 #!/bin/bash
