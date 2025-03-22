@@ -16,7 +16,7 @@ public class Manager {
     return name;
   }
 
-  public String email() {
+  public String getEmail() {
     return email;
   }
 
@@ -38,5 +38,15 @@ public class Manager {
 
   public void setUserId(ObjectId userId) {
     this.userId = userId;
+  }
+
+  @Override
+  public String toString() {
+    return "Manager {" +
+        "id = '" + id + '\'' +
+        ", name = '" + name + '\'' +
+        ", email = '" + email + '\'' +
+        ", userId = '" + userId + '\'' +
+        '}';
   }
 }
