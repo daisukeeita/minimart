@@ -13,6 +13,7 @@ import com.acolyptos.minimart.models.Role;
 import com.acolyptos.minimart.models.User;
 import com.acolyptos.minimart.models.UserRegistrationRequest;
 import com.acolyptos.minimart.services.EmployeeService;
+import com.acolyptos.minimart.services.ManagerService;
 import com.acolyptos.minimart.services.UserService;
 import com.acolyptos.minimart.utilities.PasswordUtility;
 import com.sun.net.httpserver.HttpExchange;
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class UserRegisterHandler implements HttpHandler {
   private final UserService userService;
   private final EmployeeService employeeService;
+  private final ManagerService managerService;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   private ObjectId employeeId;
@@ -40,6 +42,7 @@ public class UserRegisterHandler implements HttpHandler {
   public UserRegisterHandler() {
     this.userService = new UserService();
     this.employeeService = new EmployeeService();
+    this.managerService = new ManagerService();
   }
 
   private void handleRegisterUser(HttpExchange exchange) throws IOException {
@@ -62,7 +65,9 @@ public class UserRegisterHandler implements HttpHandler {
 
       if (user.getRole() == Role.EMPLOYEE) {
         employeeId = employeeService.createEmployee(request.getName(), request.getEmail(), savedUser);
-      } // TODO: Add managerService after making a model and repository
+      } else if (user.getRole() == Role.MANAGER) {
+        managerId = managerService.createManager(request.getName(), request.getEmail(), savedUser);
+      }
 
       // Prepare a response JSON to the client
       Map<String, String> responseMap = new HashMap<>();
@@ -70,10 +75,9 @@ public class UserRegisterHandler implements HttpHandler {
       responseMap.put("userId", savedUser.toHexString());
       if (user.getRole() == Role.EMPLOYEE) {
         responseMap.put("employeeId", employeeId.toHexString());
+      } else if (user.getRole() == Role.MANAGER) {
+        responseMap.put("managerId", managerId.toHexString());
       }
-      // TODO:
-      // Make an objectId return value for createManager()
-      // method and add it as response to the client
 
       String jsonResponse = objectMapper.writeValueAsString(responseMap);
       sendResponse(exchange, 201, jsonResponse);
