@@ -5,7 +5,6 @@ import org.bson.types.ObjectId;
 import com.acolyptos.minimart.exceptions.DatabaseException;
 import com.acolyptos.minimart.models.Employee;
 import com.acolyptos.minimart.repositories.EmployeeRepository;
-import com.mongodb.client.result.InsertOneResult;
 
 public class EmployeeService {
   private final EmployeeRepository employeeRepository;
