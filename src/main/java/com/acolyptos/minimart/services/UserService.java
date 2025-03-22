@@ -56,6 +56,5 @@ public class UserService {
       System.err.println("Error in authenticating user - " + e.getMessage());
       throw e;
     }
-
   }
 }
