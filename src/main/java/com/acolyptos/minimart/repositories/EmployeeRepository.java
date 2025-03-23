@@ -200,7 +200,6 @@ public class EmployeeRepository {
       throw new DatabaseException("Write Failed: " + exception.getError().getMessage(), exception);
 
     } catch (MongoException exception) {
-      // Converts the ResourceNotFoundException into a DatabaseException.
       throw new DatabaseException("MongoDB Error: " + exception.getMessage(), exception);
     }
   }
