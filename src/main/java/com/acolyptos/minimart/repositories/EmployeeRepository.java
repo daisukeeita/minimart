@@ -10,6 +10,8 @@ import com.acolyptos.minimart.models.Employee;
 import com.mongodb.MongoWriteException;
 import com.mongodb.MongoWriteConcernException;
 import com.mongodb.MongoException;
+import com.mongodb.MongoQueryException;
+import com.mongodb.MongoTimeoutException;
 import com.acolyptos.minimart.exceptions.DatabaseException;
 import com.acolyptos.minimart.exceptions.ResourceNotFoundException;
 import com.mongodb.client.MongoCollection;
@@ -17,9 +19,18 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertOneResult;
 
+/*
+ * Repository class for managing Employee-related database operations.
+ * This class provides methods to insert, retrieve, and delete employees
+ * from MongoDB database.
+*/
 public class EmployeeRepository {
   private final MongoCollection<Employee> employeeCollection;
 
+  /*
+   * Initializes the EmployeeRepository and establishes a connection to
+   * the "employees" collection.
+   */
   public EmployeeRepository() {
     this.employeeCollection = MongoDB.getDatabase().getCollection("employees", Employee.class);
   }
@@ -29,7 +40,9 @@ public class EmployeeRepository {
    *
    * @param employee - The employee object to be inserted
    * 
-   * @return inserted unique identifier of the Employee
+   * @return - The unique ObjectId of the inserted Employee.
+   * 
+   * @throws - DatabaseException if the database error occurs during insertion.
    */
   public ObjectId insertEmployee(Employee employee) {
     try {
@@ -42,94 +55,153 @@ public class EmployeeRepository {
       throw new DatabaseException("Write Error: " + exception.getError().getMessage(), exception);
 
     } catch (MongoWriteConcernException exception) {
-      // Handles issues related to write concerns
+      // Handles issues related to write concerns (e.g., Failed Write Acknowledgement)
       System.err.println("Write Concern Error: " + exception.getMessage());
       throw new DatabaseException("Write concern error: " + exception.getMessage(), exception);
 
     } catch (MongoException exception) {
-      // Handles other MongoDB exceptions
+      // Catches other general MongoDB-related exceptions
       System.err.println("Database Error: " + exception.getMessage());
       throw new DatabaseException("MongoDB error: " + exception.getMessage(), exception);
 
     } catch (Exception exception) {
-      // Handles any other exceptions
+      // Catches any other Unexpected Runtime Exceptions
       System.err.println("Unexpected Error: " + exception.getMessage());
       throw new DatabaseException("Unexpected error: " + exception.getMessage(), exception);
     }
   }
 
   /*
-   * Retrieves an Employee by their Unique ID
+   * Retrieves an Employee from the database by their unique ObjectId.
    * 
-   * @param id The unique identifier of the employee
-   * 
-   * @return The employee object if found, or null if not found.
+   * @param id - The unique ObjectId of the Employee.
+   *
+   * @return The Employee object, if found.
+   *
+   * @throws ResourceNotFoundException if no employee is found with the given ID.
+   *
+   * @throws DatabaseException if an error occurs during the retrieval process.
    */
   public Employee getEmployeeById(ObjectId id) {
     try {
       Employee employee = employeeCollection.find(Filters.eq("_id", id)).first();
+
       if (employee == null) {
         throw new ResourceNotFoundException("Employee with id " + id + " not found");
       }
-      return employee;
 
-    } catch (ResourceNotFoundException e) {
-      throw new DatabaseException("Error retrieving Employee - " + e.getMessage(), e);
+      return employee;
+    } catch (MongoQueryException exception) {
+      throw new DatabaseException("Query Excecution Failed: " + exception.getMessage(), exception);
+
+    } catch (MongoTimeoutException exception) {
+      throw new DatabaseException("Database Timeout: " + exception.getMessage(), exception);
+
+    } catch (MongoException exception) {
+      throw new DatabaseException("MongoDB Error: " + exception.getMessage(), exception);
     }
   }
 
   /*
-   * Retrieves and Employee by their name
+   * Retrieves an Employee from the database by their name.
    *
-   * @param name The identifier of the employee
-   * 
-   * @return The employee object if found, or null if not found.
+   * @param name - The name of the Employee.
+   *
+   * @return The Employee object, if found.
+   *
+   * @throws ResourceNotFoundException if no employee is found with the given
+   * name.
+   *
+   * @throws DatabaseException if an error occurs during retrieval process.
    */
   public Employee getEmployeeByName(String name) {
     try {
       Employee employee = employeeCollection.find(Filters.eq("name", name)).first();
+
       if (employee == null) {
         throw new ResourceNotFoundException("Employee with name " + name + " not found");
       }
+
       return employee;
-    } catch (ResourceNotFoundException e) {
-      throw new DatabaseException("Error retrieving Employee - " + e.getMessage(), e);
+    } catch (MongoQueryException exception) {
+      throw new DatabaseException("Query Excecution Failed: " + exception.getMessage(), exception);
+
+    } catch (MongoTimeoutException exception) {
+      throw new DatabaseException("Database Timeout: " + exception.getMessage(), exception);
+
+    } catch (MongoException exception) {
+      throw new DatabaseException("MongoDB Error: " + exception.getMessage(), exception);
     }
   }
 
   /*
-   * Retrieves all the Employess
+   * Retrieves all Employee documents stored in the database.
    * 
-   * @return The list of employees if found, or null if not found
+   * @return A list of Employee objects.
+   *
+   * @throws ResourceNotFoundException if no employee is found.
+   *
+   * @throws DatabaseException if an error occurs during the retrieval process.
    */
   public List<Employee> getAllEmployees() {
     List<Employee> employees = new ArrayList<>();
 
+    // Checks if the "employees" collection is not empty
+    Employee checkIfEmpty = employeeCollection.find().first();
+    if (checkIfEmpty == null)
+      throw new ResourceNotFoundException("No employees found in the database.");
+
     try {
+      // Iterates through the collection and adds all found employees to the list
       for (Employee employee : employeeCollection.find()) {
         employees.add(employee);
       }
 
       return employees;
-    } catch (Exception e) {
-      throw new DatabaseException("List was empty.", e);
+    } catch (MongoQueryException exception) {
+      throw new DatabaseException("Query Excecution Failed: " + exception.getMessage(), exception);
+
+    } catch (MongoTimeoutException exception) {
+      throw new DatabaseException("Database Timeout: " + exception.getMessage(), exception);
+
+    } catch (MongoException exception) {
+      throw new DatabaseException("MongoDB Error: " + exception.getMessage(), exception);
+
     }
   }
 
   /*
-   * Deletes an employee from the collection by their ID
-   * 
-   * @param id - The unique identifier of the employee to be deleted
-   * 
-   * @return true if the deletion was successfull, false otherwise.
+   * Deletes an Employee from the database using their unique ObjectId.
+   *
+   * @param id - The unique ObjectId of the Employee to be deleted.
+   *
+   * @return true if the deletion was successful, false otherwise.
+   *
+   * @throws ResourceNotFoundException if no employee is found with the given
+   * ObjectId.
+   *
+   * @throws DatabaseException if error occurs during the deletion.
    */
   public boolean deleteEmployee(ObjectId id) {
     try {
+      // Checks if there is an employee based on given unique ObjectId.
+      Employee checkIfExist = employeeCollection.find(Filters.eq("_id", id)).first();
+      if (checkIfExist == null)
+        throw new ResourceNotFoundException("Employee not Found.");
+
+      // Attemps to delete the employee and checks if the deletion was successful
       DeleteResult result = employeeCollection.deleteOne(Filters.eq("_id", id));
 
       return result.getDeletedCount() > 0;
-    } catch (Exception e) {
-      throw new DatabaseException("Failed to delete Employee.", e);
+    } catch (MongoWriteConcernException exception) {
+      throw new DatabaseException("Write Concern Failed: " + exception.getMessage(), exception);
+
+    } catch (MongoWriteException exception) {
+      throw new DatabaseException("Write Failed: " + exception.getError().getMessage(), exception);
+
+    } catch (MongoException exception) {
+      // Converts the ResourceNotFoundException into a DatabaseException.
+      throw new DatabaseException("MongoDB Error: " + exception.getMessage(), exception);
     }
   }
 }
