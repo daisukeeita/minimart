@@ -2,6 +2,7 @@ package com.acolyptos.minimart.handlers;
 
 import com.acolyptos.minimart.models.User;
 import com.acolyptos.minimart.services.UserService;
+import com.acolyptos.minimart.exceptions.AuthenticationException;
 import com.acolyptos.minimart.exceptions.DatabaseException;
 
 import com.acolyptos.minimart.utilities.JwtUtility;
@@ -42,25 +43,26 @@ public class UserLoginHandler implements HttpHandler {
       User authenticatedUser = userService.authenticateUser(userLoginRequest.getUsername(),
           userLoginRequest.getPassword());
 
-      if (authenticatedUser != null) {
-        // Prepare or Generate JWT Token
-        String token = JwtUtility.generateToken(authenticatedUser.getId().toString(),
-            authenticatedUser.getRole().toString());
+      // Prepare or Generate JWT Token
+      String token = JwtUtility.generateToken(authenticatedUser.getId().toString(),
+          authenticatedUser.getRole().toString());
 
-        // Prepare a response
-        Map<String, String> responseMap = new HashMap<>();
-        responseMap.put("message", "Login Successfull");
-        responseMap.put("token", token);
+      // Prepare a response
+      Map<String, String> responseMap = new HashMap<>();
+      responseMap.put("message", "Login Successfull");
+      responseMap.put("token", token);
 
-        String jsonResponse = objectMapper.writeValueAsString(responseMap);
-        sendResponse(exchange, 200, jsonResponse);
-      } else {
-        sendResponse(exchange, 401, "Invalid Username or Password");
-      }
-    } catch (DatabaseException e) {
-      sendResponse(exchange, 500, "Internal Server Error: " + e.getMessage());
-    } catch (Exception e) {
-      sendResponse(exchange, 400, "Invalid Request: " + e.getMessage());
+      String jsonResponse = objectMapper.writeValueAsString(responseMap);
+      sendResponse(exchange, 200, jsonResponse);
+
+    } catch (IllegalArgumentException exception) {
+      sendResponse(exchange, 400, "Missing Field: " + exception.getMessage());
+    } catch (AuthenticationException exception) {
+      sendResponse(exchange, 401, "Failed in Authenticating User: " + exception.getMessage());
+    } catch (DatabaseException exception) {
+      sendResponse(exchange, 500, "Internal Server Error: " + exception.getMessage());
+    } catch (Exception exception) {
+      sendResponse(exchange, 400, "Invalid Request: " + exception.getMessage());
     }
   }
 
