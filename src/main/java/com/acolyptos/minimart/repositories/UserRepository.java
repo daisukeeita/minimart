@@ -9,7 +9,9 @@ import com.acolyptos.minimart.database.MongoDB;
 import com.acolyptos.minimart.exceptions.DatabaseException;
 import com.acolyptos.minimart.exceptions.ResourceNotFoundException;
 import com.acolyptos.minimart.models.User;
-
+import com.mongodb.MongoException;
+import com.mongodb.MongoWriteConcernException;
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
@@ -34,8 +36,25 @@ public class UserRepository {
     try {
       InsertOneResult result = userCollection.insertOne(user);
       return result.getInsertedId().asObjectId().getValue();
-    } catch (Exception e) {
-      throw new DatabaseException("Failed to insert User.", e);
+
+    } catch (MongoWriteException exception) {
+      // Handles issues like duplicate key errors or other data constraints
+      System.err.println("Write Error " + exception.getError().getMessage());
+      throw new DatabaseException("Write Error: " + exception.getError().getMessage(), exception);
+
+    } catch (MongoWriteConcernException exception) {
+      // Handles issues related to Write Concern
+      System.err.println("Write Concern Error: " + exception.getMessage());
+      throw new DatabaseException("Write concern error: " + exception.getMessage(), exception);
+
+    } catch (MongoException exception) {
+      // Handles other MongoDB exception
+      System.err.println("Database Error: " + exception.getMessage());
+      throw new DatabaseException("MongoDB error: " + exception.getMessage(), exception);
+
+    } catch (Exception exception) {
+      System.err.println("Unexpected Error: " + exception.getMessage());
+      throw new DatabaseException("Unexpected error: " + exception.getMessage(), exception);
     }
   }
 
