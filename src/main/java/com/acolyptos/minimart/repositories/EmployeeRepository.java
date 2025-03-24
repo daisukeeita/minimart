@@ -36,9 +36,9 @@ public class EmployeeRepository {
   }
 
   /*
-   * Inserts new employee into the MongoDB collection
+   * Inserts new employee into the MongoDB collection.
    *
-   * @param employee - The employee object to be inserted
+   * @param employee - The employee object to be inserted.
    * 
    * @return - The unique ObjectId of the inserted Employee.
    * 
@@ -48,7 +48,6 @@ public class EmployeeRepository {
     try {
       InsertOneResult result = employeeCollection.insertOne(employee);
       return result.getInsertedId().asObjectId().getValue();
-
     } catch (MongoWriteException exception) {
       // Handles issues like duplicate key errors or other data constraints
       System.err.println("Write Error: " + exception.getError().getMessage());
@@ -168,7 +167,6 @@ public class EmployeeRepository {
 
     } catch (MongoException exception) {
       throw new DatabaseException("MongoDB Error: " + exception.getMessage(), exception);
-
     }
   }
 
@@ -177,7 +175,7 @@ public class EmployeeRepository {
    *
    * @param id - The unique ObjectId of the Employee to be deleted.
    *
-   * @return true if the deletion was successful, false otherwise.
+   * @return true if the deletion was successful.
    *
    * @throws ResourceNotFoundException if no employee is found with the given
    * ObjectId.
