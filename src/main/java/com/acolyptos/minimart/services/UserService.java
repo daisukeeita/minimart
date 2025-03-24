@@ -6,7 +6,6 @@ import com.acolyptos.minimart.repositories.UserRepository;
 
 import com.acolyptos.minimart.utilities.PasswordUtility;
 import com.acolyptos.minimart.exceptions.DatabaseException;
-import com.acolyptos.minimart.exceptions.ServiceException;
 import com.acolyptos.minimart.exceptions.AuthenticationException;
 
 import org.bson.types.ObjectId;
