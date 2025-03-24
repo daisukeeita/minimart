@@ -5,28 +5,57 @@ import org.bson.types.ObjectId;
 import com.acolyptos.minimart.models.Manager;
 import com.acolyptos.minimart.repositories.ManagerRepository;
 import com.acolyptos.minimart.exceptions.DatabaseException;
+import com.acolyptos.minimart.exceptions.ServiceException;
 
+/*
+ * service class for managing Manager-related business logic before database operations.
+ * This class provides validation methods before passing the data to ManagerRepository class.
+*/
 public class ManagerService {
   private final ManagerRepository managerRepository;
 
+  /*
+   * Initializes the ManagerService and establishes access to EmployeeRepository.
+   */
   public ManagerService() {
     this.managerRepository = new ManagerRepository();
   }
 
+  /*
+   * Validates data that will be given and creates a Manager object before passing
+   * it to EmployeeRepository.
+   *
+   * @param name - The name of the manager to be inserted.
+   * 
+   * @param email - The email. of the manager to be inserted.
+   * 
+   * @param userId - The userId of the manager to be inserted.
+   * 
+   * @return The unique ObjectId of the manager generated from ManagerRepository.
+   * 
+   * @throws IllegalArgumentException if one the expected data is null or empty.
+   * 
+   * @throws ServiceException if the service error occurs during creation.
+   */
   public ObjectId createManager(String name, String email, ObjectId userId) {
-    Manager manager = new Manager();
-    manager.setName(name);
-    manager.setEmail(email);
-    manager.setUserId(userId);
+    // Checks if one of the data is null or empty.
+    if (name == null || name.trim().isEmpty())
+      throw new IllegalArgumentException("Name is required.");
+    if (email == null || email.trim().isEmpty())
+      throw new IllegalArgumentException("Email is required.");
+    if (userId == null)
+      throw new IllegalArgumentException("User ID is required.");
+
+    Manager manager = new Manager(name, email, userId);
 
     try {
       ObjectId result = managerRepository.insertManager(manager);
-
       System.out.println(manager.getName() + " Successfully added!");
+
       return result;
-    } catch (Exception e) {
-      System.out.println("Error in service layer: " + e.getMessage());
-      throw new DatabaseException("Error: " + e.getMessage(), e);
+    } catch (DatabaseException exception) {
+      System.err.println("Error in database: " + exception.getMessage());
+      throw new ServiceException("Failed to create manager: " + exception.getMessage(), exception);
     }
   }
 }
