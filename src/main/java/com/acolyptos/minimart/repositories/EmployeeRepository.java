@@ -84,7 +84,9 @@ public class EmployeeRepository {
    */
   public Employee getEmployeeById(ObjectId id) {
     try {
-      Employee employee = employeeCollection.find(Filters.eq("_id", id)).first();
+      Employee employee = employeeCollection
+          .find(Filters.eq("_id", id))
+          .first();
 
       if (employee == null) {
         throw new ResourceNotFoundException("Employee with id " + id + " not found");
@@ -146,7 +148,7 @@ public class EmployeeRepository {
   public List<Employee> getAllEmployees() {
     List<Employee> employees = new ArrayList<>();
 
-    // Checks if the "employees" collection is not empty
+    // Checks if "employees" collection is not empty
     Employee checkIfEmpty = employeeCollection.find().first();
     if (checkIfEmpty == null)
       throw new ResourceNotFoundException("No employees found in the database.");
@@ -184,15 +186,14 @@ public class EmployeeRepository {
    */
   public boolean deleteEmployee(ObjectId id) {
     try {
-      // Checks if there is an employee based on given unique ObjectId.
-      Employee checkIfExist = employeeCollection.find(Filters.eq("_id", id)).first();
-      if (checkIfExist == null)
-        throw new ResourceNotFoundException("Employee not Found.");
-
       // Attemps to delete the employee and checks if the deletion was successful
       DeleteResult result = employeeCollection.deleteOne(Filters.eq("_id", id));
 
-      return result.getDeletedCount() > 0;
+      // Checks if employee exists based on given unique ObjectId.
+      if (result.getDeletedCount() == 0)
+        throw new ResourceNotFoundException("Employee not found.");
+
+      return true;
     } catch (MongoWriteConcernException exception) {
       throw new DatabaseException("Write Concern Failed: " + exception.getMessage(), exception);
 
