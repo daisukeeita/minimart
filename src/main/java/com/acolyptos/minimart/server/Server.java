@@ -12,7 +12,9 @@ public class Server {
       MongoDB.connect();
 
       HttpServer httpServer = HttpServer.create(new InetSocketAddress(8080), 0);
-      Router.registerRoutes(httpServer); // Register routes to the httpServer
+
+      // Register routes to the httpServer
+      Router.registerRoutes(httpServer);
 
       httpServer.start();
       System.out.println("Server is running at http://localhost:8080");
