@@ -8,6 +8,12 @@ public class Manager {
   private String email;
   private ObjectId userId;
 
+  public Manager(String name, String email, ObjectId userId) {
+    this.name = name;
+    this.email = email;
+    this.userId = userId;
+  }
+
   public ObjectId getId() {
     return id;
   }
