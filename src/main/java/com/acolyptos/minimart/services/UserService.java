@@ -6,17 +6,44 @@ import com.acolyptos.minimart.repositories.UserRepository;
 
 import com.acolyptos.minimart.utilities.PasswordUtility;
 import com.acolyptos.minimart.exceptions.DatabaseException;
+import com.acolyptos.minimart.exceptions.ServiceException;
 import com.acolyptos.minimart.exceptions.AuthenticationException;
 
 import org.bson.types.ObjectId;
 
+/*
+ * Service class for managing User-related business logic before database operations.
+ * This class provides validation methods before passing the data to UserRepository.
+*/
 public class UserService {
   private final UserRepository userRepository;
 
+  /*
+   * Initializes the UserService and establishes the access to UserRepository.
+   */
   public UserService() {
     this.userRepository = new UserRepository();
   }
 
+  /*
+   * Validates data that will be given and creates a User object before passing it
+   * to UserRepository.
+   *
+   * @param username - The username of the user to be inserted.
+   * 
+   * @param password - The password of the user to be inserted.
+   * 
+   * @param role - The role of the user to be inserted.
+   * 
+   * @return The unique ObjectId of the user generated from UserRepository
+   *
+   * @throws IllegalArgumentException if one of the expected data is null or
+   * empty.
+   *
+   * @throws AuthenticationException if the user already exists upon checking.
+   * 
+   * @throws ServiceException if the service error occurs during creation.
+   */
   public ObjectId createUser(String username, String password, String role) {
     if (username == null || username.trim().isEmpty())
       throw new IllegalArgumentException("Username is required.");
@@ -28,7 +55,7 @@ public class UserService {
       throw new IllegalArgumentException("Role is required.");
 
     if (userRepository.getUserByUsername(username) != null)
-      throw new IllegalArgumentException("Username already exists.");
+      throw new AuthenticationException("Username already exists.");
 
     String hashedPassword = PasswordUtility.hashPassword(password);
 
@@ -49,15 +76,32 @@ public class UserService {
     try {
       ObjectId result = userRepository.insertUser(user);
       System.out.println(user.getUsername() + " Succesfully added!");
-      return result;
 
-    } catch (DatabaseException e) {
-      System.err.println("Error in service layer: " + e.getMessage());
-      throw e;
+      return result;
+    } catch (DatabaseException exception) {
+      System.err.println("Error in service layer: " + exception.getMessage());
+      throw new ServiceException("User creation failed: " + exception.getMessage(), exception);
     }
 
   }
 
+  /*
+   * Validates username and password and creates a User object.
+   * 
+   * @param username - The username of the user to be validated.
+   * 
+   * @param password - The password of the user to be validated.
+   * 
+   * @return The User object, if both username and password have been
+   * authenticated.
+   *
+   * @throws IllegalArgumentException if one of the expected data is null or
+   * empty.
+   * 
+   * @throws AuthenticationException if user not found by the given username.
+   * 
+   * @throws ServiceException if the service error occurs during Authentication.
+   */
   public User authenticateUser(String username, String password) {
     if (username == null)
       throw new IllegalArgumentException("Username is required.");
@@ -80,7 +124,7 @@ public class UserService {
 
     } catch (DatabaseException exception) {
       System.err.println("Error in authenticating user - " + exception.getMessage());
-      throw new AuthenticationException("Error in Authentication: " + exception.getMessage());
+      throw new ServiceException("Error in Authentication: " + exception.getMessage(), exception);
     }
   }
 }

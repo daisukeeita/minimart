@@ -3,17 +3,16 @@ package com.acolyptos.minimart.repositories;
 import java.util.ArrayList;
 import java.util.List;
 import org.bson.types.ObjectId;
-
+import com.acolyptos.minimart.database.DatabaseProvider;
 import com.acolyptos.minimart.database.MongoDB;
+import com.acolyptos.minimart.exceptions.DatabaseException;
+import com.acolyptos.minimart.exceptions.ResourceNotFoundException;
 import com.acolyptos.minimart.models.Employee;
-
-import com.mongodb.MongoWriteException;
-import com.mongodb.MongoWriteConcernException;
 import com.mongodb.MongoException;
 import com.mongodb.MongoQueryException;
 import com.mongodb.MongoTimeoutException;
-import com.acolyptos.minimart.exceptions.DatabaseException;
-import com.acolyptos.minimart.exceptions.ResourceNotFoundException;
+import com.mongodb.MongoWriteConcernException;
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.DeleteResult;
@@ -32,7 +31,8 @@ public class EmployeeRepository {
    * the "employees" collection.
    */
   public EmployeeRepository() {
-    this.employeeCollection = MongoDB.getDatabase().getCollection("employees", Employee.class);
+    DatabaseProvider mongoDB = new MongoDB();
+    this.employeeCollection = mongoDB.getDatabase().getCollection("employees", Employee.class);
   }
 
   /*

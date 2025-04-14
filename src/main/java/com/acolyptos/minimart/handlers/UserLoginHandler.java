@@ -17,6 +17,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+/*
+ * Handles user login requests via HTTP.
+ * This class implements HttpHandler Interface.
+ */
 public class UserLoginHandler implements HttpHandler {
   private final UserService userService;
   private final ObjectMapper objectMapper = new ObjectMapper();
@@ -25,6 +29,14 @@ public class UserLoginHandler implements HttpHandler {
     this.userService = new UserService();
   }
 
+  /*
+   * Handles HTTP requests and determines if it is a POST request.
+   * Calls `handleLogin()` if valid, else send a 400 error response.
+   *
+   * @param exchange - The HTTP request/response object.
+   *
+   * @throws IOException if an input/output error occurs.
+   */
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {

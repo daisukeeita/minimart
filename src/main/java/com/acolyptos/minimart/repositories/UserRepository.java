@@ -2,9 +2,7 @@ package com.acolyptos.minimart.repositories;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bson.types.ObjectId;
-
 import com.acolyptos.minimart.database.MongoDB;
 import com.acolyptos.minimart.exceptions.DatabaseException;
 import com.acolyptos.minimart.exceptions.ResourceNotFoundException;
@@ -27,13 +25,20 @@ import com.mongodb.client.result.InsertOneResult;
 */
 public class UserRepository {
   private final MongoCollection<User> userCollection;
-
+  
   /*
    * Initializes the UserRepository and establishes a connection to
    * the "users" collection.
    */
   public UserRepository() {
-    this.userCollection = MongoDB.getDatabase().getCollection("users", User.class);
+    MongoDB database = new MongoDB();
+    this.userCollection = database
+    .getDatabase()
+    .getCollection("users", User.class);
+  }
+
+  public UserRepository(MongoCollection<User> userCollection) {
+    this.userCollection = userCollection;
   }
 
   /*
@@ -53,21 +58,29 @@ public class UserRepository {
     } catch (MongoWriteException exception) {
       // Handles issues like duplicate key errors or other data constraints
       System.err.println("Write Error " + exception.getError().getMessage());
-      throw new DatabaseException("Write Error: " + exception.getError().getMessage(), exception);
+      throw new DatabaseException(
+        "Write Error: " + exception.getError().getMessage(), exception
+      );
 
     } catch (MongoWriteConcernException exception) {
       // Handles issues related to Write Concern
       System.err.println("Write Concern Error: " + exception.getMessage());
-      throw new DatabaseException("Write concern error: " + exception.getMessage(), exception);
+      throw new DatabaseException(
+        "Write concern error: " + exception.getMessage(), exception
+      );
 
     } catch (MongoException exception) {
       // Handles other MongoDB exception
       System.err.println("Database Error: " + exception.getMessage());
-      throw new DatabaseException("MongoDB error: " + exception.getMessage(), exception);
+      throw new DatabaseException(
+        "MongoDB error: " + exception.getMessage(), exception
+      );
 
     } catch (Exception exception) {
       System.err.println("Unexpected Error: " + exception.getMessage());
-      throw new DatabaseException("Unexpected error: " + exception.getMessage(), exception);
+      throw new DatabaseException(
+        "Unexpected error: " + exception.getMessage(), exception
+      );
     }
   }
 
@@ -89,17 +102,25 @@ public class UserRepository {
           .first();
 
       if (user == null)
-        throw new ResourceNotFoundException("User with id: " + id + " not found.");
+        throw new ResourceNotFoundException(
+        "User with id: " + id + " not found."
+      );
 
       return user;
     } catch (MongoQueryException exception) {
-      throw new DatabaseException("Query Execution Failes: " + exception.getMessage(), exception);
+      throw new DatabaseException(
+        "Query Execution Failes: " + exception.getMessage(), exception
+      );
 
     } catch (MongoTimeoutException exception) {
-      throw new DatabaseException("Database Timeout: " + exception.getMessage(), exception);
+      throw new DatabaseException(
+        "Database Timeout: " + exception.getMessage(), exception
+      );
 
     } catch (MongoException exception) {
-      throw new DatabaseException("MongoDB Error: " + exception.getMessage(), exception);
+      throw new DatabaseException(
+        "MongoDB Error: " + exception.getMessage(), exception
+      );
     }
   }
 
@@ -122,17 +143,25 @@ public class UserRepository {
           .first();
 
       if (user == null) {
-        throw new ResourceNotFoundException("User with username " + username + " not found.");
+        throw new ResourceNotFoundException(
+          "User with username " + username + " not found."
+        );
       }
       return user;
     } catch (MongoQueryException exception) {
-      throw new DatabaseException("Query Execution Failed: " + exception.getMessage(), exception);
+      throw new DatabaseException(
+        "Query Execution Failed: " + exception.getMessage(), exception
+      );
 
     } catch (MongoTimeoutException exception) {
-      throw new DatabaseException("Database Timeout: " + exception.getMessage(), exception);
+      throw new DatabaseException(
+        "Database Timeout: " + exception.getMessage(), exception
+      );
 
     } catch (MongoException exception) {
-      throw new DatabaseException("MongoDB Error: " + exception.getMessage(), exception);
+      throw new DatabaseException(
+        "MongoDB Error: " + exception.getMessage(), exception
+      );
     }
   }
 
@@ -164,13 +193,19 @@ public class UserRepository {
 
       return users;
     } catch (MongoQueryException exception) {
-      throw new DatabaseException("Query Execution Failed: " + exception.getMessage(), exception);
+      throw new DatabaseException(
+        "Query Execution Failed: " + exception.getMessage(), exception
+      );
 
     } catch (MongoTimeoutException exception) {
-      throw new DatabaseException("Database Timeount: " + exception.getMessage(), exception);
+      throw new DatabaseException(
+        "Database Timeount: " + exception.getMessage(), exception
+      );
 
     } catch (MongoException exception) {
-      throw new DatabaseException("MongoDB Error: " + exception.getMessage(), exception);
+      throw new DatabaseException(
+        "MongoDB Error: " + exception.getMessage(), exception
+      );
     }
   }
 
@@ -198,13 +233,43 @@ public class UserRepository {
 
       return true;
     } catch (MongoWriteConcernException exception) {
-      throw new DatabaseException("Write Concern Failed: " + exception.getMessage(), exception);
+      throw new DatabaseException(
+        "Write Concern Failed: " + exception.getMessage(), exception
+      );
 
     } catch (MongoWriteException exception) {
-      throw new DatabaseException("Write Failed: " + exception.getError().getMessage(), exception);
+      throw new DatabaseException(
+        "Write Failed: " + exception.getError().getMessage(), exception
+      );
 
     } catch (MongoException exception) {
-      throw new DatabaseException("MongoDB Error: " + exception.getMessage(), exception);
+      throw new DatabaseException(
+        "MongoDB Error: " + exception.getMessage(), exception
+      );
+    }
+  }
+
+  public void deleteAll() throws Exception {
+    try {
+      DeleteResult result = userCollection.deleteMany(null);
+
+      if (result.getDeletedCount() == 0)
+        throw new Exception("Deletion Failed.");
+
+    } catch (MongoWriteConcernException exception) {
+      throw new DatabaseException(
+        "Write Concern Failed: " + exception.getMessage(), exception
+      );
+
+    } catch (MongoWriteException exception) {
+      throw new DatabaseException(
+        "Write Failed: " + exception.getError().getMessage(), exception
+      );
+
+    } catch (MongoException exception) {
+      throw new DatabaseException(
+        "MongoDB Error: " + exception.getMessage(), exception
+      );
     }
   }
 }
