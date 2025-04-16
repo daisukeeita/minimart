@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.acolyptos.minimart.database.DatabaseProvider;
 import com.acolyptos.minimart.database.MongoDBTest;
+import com.acolyptos.minimart.exceptions.DatabaseException;
 import com.acolyptos.minimart.exceptions.ResourceNotFoundException;
 import com.acolyptos.minimart.models.Role;
 import com.acolyptos.minimart.models.User;
@@ -75,26 +76,17 @@ class UserRepositoryTest {
     );
     
   }
-  //
-  // @Test
-  // void insertDuplicateUserTest() {
-  //   User user1 = new User("userTest", "test123", Role.EMPLOYEE);
-  //
-  //   Document document1 = new Document("username", user1.getUsername())
-  //     .append("password", user1.getPassword())
-  //     .append("role", user1.getRole());
-  //
-  //   userCollection.insertOne(document1);
-  //
-  //   Document document2 = new Document("username", user1.getUsername())
-  //     .append("password", user1.getPassword())
-  //     .append("role", user1.getRole());
-  //
-  //   Exception exception = assertThrows(MongoWriteException.class, () -> {
-  //     userCollection.insertOne(document2);
-  //   });
-  //
-  //   String message = exception.getMessage();
-  //   assertTrue(message.contains("E11000"));
-  // }
+
+  @Test
+  void duplicateUserTest () {
+    User user = new User("userTest", "test123", Role.EMPLOYEE);
+    userRepository.insertUser(user);
+
+    DatabaseException exception = assertThrows(DatabaseException.class, () -> {
+      userRepository.insertUser(user);
+    });
+
+    String message = exception.getMessage();
+    assertTrue(message.contains("E11000"));
+  }
 }
