@@ -47,7 +47,7 @@ class UserRepositoryTest {
     User user = new User("userTest", "test123", Role.EMPLOYEE);
     
     ObjectId result = userRepository.insertUser(user); 
-    assertNotNull(result, "UserId should not be null upon inserting");
+    assertNotNull(result, "Result should not be null upon inserting");
 
     User byUsername = userRepository.getUserByUsername("userTest");
     assertNotNull(
@@ -58,6 +58,21 @@ class UserRepositoryTest {
     assertEquals("test123", byUsername.getPassword());
     assertEquals(Role.EMPLOYEE, byUsername.getRole());
   }
+
+  @Test
+  void duplicateUserTest () {
+    User user = new User("userTest", "test123", Role.EMPLOYEE);
+    userRepository.insertUser(user);
+
+    DatabaseException exception = assertThrows(DatabaseException.class, () -> {
+      userRepository.insertUser(user);
+    });
+
+    String message = exception.getMessage();
+    assertTrue(message.contains("E11000"));
+  }
+
+
 
   @Test
   void findNotFoundUserTest() {
@@ -75,18 +90,5 @@ class UserRepositoryTest {
       + " but was: " + actualMessage
     );
     
-  }
-
-  @Test
-  void duplicateUserTest () {
-    User user = new User("userTest", "test123", Role.EMPLOYEE);
-    userRepository.insertUser(user);
-
-    DatabaseException exception = assertThrows(DatabaseException.class, () -> {
-      userRepository.insertUser(user);
-    });
-
-    String message = exception.getMessage();
-    assertTrue(message.contains("E11000"));
   }
 }

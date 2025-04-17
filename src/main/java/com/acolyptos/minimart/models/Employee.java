@@ -1,12 +1,20 @@
 package com.acolyptos.minimart.models;
 
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
 
 public class Employee {
+  @BsonId
   private ObjectId id;
+  @BsonProperty("name")
   private String name;
+  @BsonProperty("email")
   private String email;
+  @BsonProperty("userId")
   private ObjectId userId;
+
+  public Employee() {}
 
   public Employee(String name, String email, ObjectId userId) {
     this.name = name;

@@ -32,7 +32,13 @@ public class EmployeeRepository {
    */
   public EmployeeRepository() {
     DatabaseProvider mongoDB = new MongoDB();
-    this.employeeCollection = mongoDB.getDatabase().getCollection("employees", Employee.class);
+    this.employeeCollection = mongoDB
+      .getDatabase()
+      .getCollection("employees", Employee.class);
+  }
+
+  public EmployeeRepository(MongoCollection<Employee> employeeCollection) {
+    this.employeeCollection = employeeCollection;
   }
 
   /*

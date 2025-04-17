@@ -14,9 +14,7 @@ public class User {
   @BsonProperty("role")
   private Role role;
 
-  public User() {
-
-  }
+  public User() {}
 
   public User(String username, String password, Role role) {
     this.username = username;
