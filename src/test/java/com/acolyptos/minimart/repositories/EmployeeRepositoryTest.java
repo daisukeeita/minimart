@@ -1,7 +1,7 @@
 package com.acolyptos.minimart.repositories;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,15 +13,16 @@ import com.mongodb.client.MongoCollection;
 
 class EmployeeRepositoryTest {
   static DatabaseProvider mongoConnection;
-  static MongoCollection<Document> employeeCollection;
+  static MongoCollection<Employee> employeeCollection;
   static EmployeeRepository employeeRepository;
 
   @BeforeEach
   void setup() {
     mongoConnection = new MongoDBTest();
     employeeCollection = mongoConnection
-      .getDatabase().getCollection("employees_test");
-    // employeeRepository = new EmployeeRepository(employeeCollection);
+      .getDatabase().getCollection("employees_test", Employee.class);
+    employeeRepository = new EmployeeRepository(employeeCollection);
+    employeeCollection.drop();
   }
 
   @AfterEach
@@ -33,16 +34,16 @@ class EmployeeRepositoryTest {
   void insertAndFindEmployeeTest() {
     ObjectId userId = new ObjectId();
     Employee employee = new Employee("John Doe", "sample@mail.com", userId);
-    Document doc = new Document("name", employee.getName())
-      .append("email", employee.getEmail())
-      .append("userId", employee.getUserId());
 
-    ObjectId id = employeeCollection.insertOne(doc)
-      .getInsertedId()
-      .asObjectId()
-      .getValue();
+    ObjectId result = employeeRepository.insertEmployee(employee);
+    assertNotNull(result, "Result should not be null upon inserting");
 
-    assertNotNull(id, "ID should not be null");
+    Employee byName = employeeRepository
+      .getEmployeeByName("John Doe");
+    assertNotNull(byName, "Employee should not be null when fetched by Name");
 
+    assertEquals("John Doe", byName.getName());
+    assertEquals("sample@mail.com", byName.getEmail());
+    assertEquals("userId", byName.getUserId());
   }
 }
