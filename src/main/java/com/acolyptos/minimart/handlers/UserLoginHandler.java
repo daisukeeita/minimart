@@ -1,21 +1,18 @@
 package com.acolyptos.minimart.handlers;
 
-import com.acolyptos.minimart.models.User;
-import com.acolyptos.minimart.services.UserService;
-import com.acolyptos.minimart.exceptions.AuthenticationException;
-import com.acolyptos.minimart.exceptions.DatabaseException;
-
-import com.acolyptos.minimart.utilities.JwtUtility;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.sun.net.httpserver.*;
-
-import java.util.Map;
-import java.util.HashMap;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import com.acolyptos.minimart.exceptions.AuthenticationException;
+import com.acolyptos.minimart.exceptions.DatabaseException;
+import com.acolyptos.minimart.models.User;
+import com.acolyptos.minimart.services.UserService;
+import com.acolyptos.minimart.utilities.JwtUtility;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 
 /*
  * Handles user login requests via HTTP.

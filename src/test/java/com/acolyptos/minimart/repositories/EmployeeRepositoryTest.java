@@ -2,12 +2,15 @@ package com.acolyptos.minimart.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.acolyptos.minimart.database.DatabaseProvider;
 import com.acolyptos.minimart.database.MongoDBTest;
+import com.acolyptos.minimart.exceptions.ResourceNotFoundException;
 import com.acolyptos.minimart.models.Employee;
 import com.mongodb.client.MongoCollection;
 
@@ -42,8 +45,30 @@ class EmployeeRepositoryTest {
       .getEmployeeByName("John Doe");
     assertNotNull(byName, "Employee should not be null when fetched by Name");
 
-    assertEquals("John Doe", byName.getName());
-    assertEquals("sample@mail.com", byName.getEmail());
-    assertEquals("userId", byName.getUserId());
+
+    String name = byName.getName();
+    String email = byName.getEmail();
+    ObjectId id = byName.getUserId();
+
+    assertEquals("John Doe", name);
+    assertEquals("sample@mail.com", email);
+    assertEquals(userId, id);
+  }
+
+  @Test
+  void notFoundEmployeeTest() {
+    ResourceNotFoundException exception = 
+      assertThrows(ResourceNotFoundException.class, 
+      () -> employeeRepository.getEmployeeByName("nonexistent")
+    );
+
+    String message = exception.getMessage();
+    String expectedMessage = "Employee with name nonexistent not found.";
+
+    assertTrue(
+      message.contains(expectedMessage),
+      "Expected message contains: " + expectedMessage 
+      + " but was: " + message
+    );
   }
 }
