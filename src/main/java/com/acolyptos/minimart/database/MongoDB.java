@@ -25,21 +25,24 @@ public class MongoDB implements DatabaseProvider {
   public MongoDB() {
     if (mongoClient == null) {
       CodecRegistry pojoCodecRegistry = CodecRegistries
-          .fromProviders(PojoCodecProvider.builder().automatic(true).build());
+      .fromProviders(PojoCodecProvider.builder()
+        .automatic(true)
+        .register("com.acolyptos.minimart.models")
+        .build()
+      );
 
       CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-          MongoClientSettings.getDefaultCodecRegistry(),
-          pojoCodecRegistry);
+        MongoClientSettings.getDefaultCodecRegistry(),
+        CodecRegistries.fromProviders(pojoCodecRegistry)
+      );
 
       MongoClientSettings settings = MongoClientSettings.builder()
-          .applyConnectionString(new com.mongodb.ConnectionString(URI))
-          .codecRegistry(codecRegistry)
-          .build();
+      .applyConnectionString(new com.mongodb.ConnectionString(URI))
+      .codecRegistry(codecRegistry)
+      .build();
 
       mongoClient = MongoClients.create(settings);
       mongoDatabase = mongoClient.getDatabase(DB_NAME);
-
-      LOGGER.info("Succesfully Connected to the MongoDB Atlas.");
     }
   }
 
