@@ -24,7 +24,18 @@ public class SupplierService {
       return result;
     } catch (DatabaseException exception) {
       System.err.println("Error in service layer: " + exception.getMessage());
-      throw new ServiceException("User creation failed: " + exception.getMessage(), exception);
+      throw new ServiceException(
+        "Supplier creation failed: " + exception.getMessage(), exception
+      );
+    }
+  }
+
+  public Supplier retrieveSupplier (String name) throws Exception {
+    try {
+      Supplier supplier = supplierRepository.getSupplierByName(name);
+      return supplier;
+    } catch (Exception e) {
+      throw new Exception("Supplier not found");
     }
   }
 }
