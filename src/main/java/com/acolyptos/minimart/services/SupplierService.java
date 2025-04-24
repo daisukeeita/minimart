@@ -30,10 +30,28 @@ public class SupplierService {
     }
   }
 
-  public Supplier retrieveSupplier (String name) throws Exception {
+  public Supplier getSupplierByName (String name) throws Exception {
     try {
       Supplier supplier = supplierRepository.getSupplierByName(name);
       return supplier;
+    } catch (Exception e) {
+      throw new Exception("Supplier not found");
+    }
+  }
+
+  public Supplier getSupplierById (ObjectId id) throws Exception {
+    try {
+      Supplier supplier = supplierRepository.getSupplierById(id);
+      return supplier;
+    } catch (Exception e) {
+      throw new Exception("Supplier not found");
+    }
+  }
+
+  public boolean deleteSupplier (ObjectId id) throws Exception {
+    try {
+      Boolean result = supplierRepository.deleteSupplier(id);
+      return result;
     } catch (Exception e) {
       throw new Exception("Supplier not found");
     }
