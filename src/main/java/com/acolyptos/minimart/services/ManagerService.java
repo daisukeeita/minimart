@@ -1,11 +1,10 @@
 package com.acolyptos.minimart.services;
 
 import org.bson.types.ObjectId;
-
-import com.acolyptos.minimart.models.Manager;
-import com.acolyptos.minimart.repositories.ManagerRepository;
 import com.acolyptos.minimart.exceptions.DatabaseException;
 import com.acolyptos.minimart.exceptions.ServiceException;
+import com.acolyptos.minimart.models.Manager;
+import com.acolyptos.minimart.repositories.ManagerRepository;
 
 /*
  * service class for managing Manager-related business logic before database operations.
@@ -56,6 +55,26 @@ public class ManagerService {
     } catch (DatabaseException exception) {
       System.err.println("Error in database: " + exception.getMessage());
       throw new ServiceException("Failed to create manager: " + exception.getMessage(), exception);
+    }
+  }
+
+  public Manager getManagerByName (String name) throws Exception {
+    try {
+      Manager manager = managerRepository.getMangerbyName(name);
+      return manager;
+    } catch (Exception e) {
+      // TODO: handle exception
+      throw new Exception("Manager not found.");
+    }
+  }
+
+  public Manager getManagerById (ObjectId id) throws Exception {
+    try {
+      Manager manager = managerRepository.getManagerById(id);
+      return manager;
+    } catch (Exception e) {
+      // TODO: handle exception
+      throw new Exception("Manager not found.");
     }
   }
 }
