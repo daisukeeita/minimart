@@ -61,4 +61,24 @@ public class EmployeeService {
       throw new ServiceException("Failed to create employee: " + exception.getMessage(), exception);
     }
   }
+
+  public Employee getEmployeeByName (String name) throws Exception {
+    try {
+      Employee employee = employeeRepository.getEmployeeByName(name);
+      return employee;
+    } catch (Exception e) {
+      // TODO: handle exception
+      throw new Exception("Employee not found.");
+    }
+  }
+
+  public Employee getEmployeeById (ObjectId id) throws Exception {
+    try {
+      Employee employee = employeeRepository.getEmployeeById(id);
+      return employee;
+    } catch (Exception e) {
+      // TODO: handle exception
+      throw new Exception("Employee not found.");
+    }
+  }
 }
