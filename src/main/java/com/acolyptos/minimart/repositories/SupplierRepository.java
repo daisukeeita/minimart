@@ -92,9 +92,7 @@ public class SupplierRepository {
       );
 
     } catch (MongoTimeoutException exception) {
-      LOG.error(
-        "Database Timeout: " + exception.getMessage(), exception
-      );
+      LOG.error("Database Timeout: " + exception.getMessage());
       throw new DatabaseException(
         "Database Timeout: " + exception.getMessage(), exception
       );
@@ -129,9 +127,7 @@ public class SupplierRepository {
       );
 
     } catch (MongoTimeoutException exception) {
-      LOG.error(
-        "Database Timeout: " + exception.getMessage(), exception
-      );
+      LOG.error("Database Timeout: " + exception.getMessage());
       throw new DatabaseException(
         "Database Timeout: " + exception.getMessage(), exception
       );
@@ -162,16 +158,19 @@ public class SupplierRepository {
 
       return suppliers;
     } catch (MongoQueryException exception) {
+      LOG.error("Query Execution Failed: " + exception.getMessage());
       throw new DatabaseException(
         "Query Execution Failed: " + exception.getMessage(), exception
       );
 
     } catch (MongoTimeoutException exception) {
+      LOG.error("Database Timeount: " + exception.getMessage());
       throw new DatabaseException(
         "Database Timeount: " + exception.getMessage(), exception
       );
 
     } catch (MongoException exception) {
+      LOG.error("Unexpected Database Error: " + exception.getMessage());
       throw new DatabaseException(
         "MongoDB Error: " + exception.getMessage(), exception
       );
@@ -183,23 +182,28 @@ public class SupplierRepository {
       DeleteResult result = supplierCollection.deleteOne(Filters.eq("_id", id));
 
       if (result.getDeletedCount() == 0) {
+        LOG.error("Supplier was not found while trying to delete it.");
         throw new ResourceNotFoundException(
           "Supplier not found."
         );
       }
 
       return true;
+
     } catch (MongoWriteConcernException exception) {
+      LOG.error("Write Concern Failed: " + exception.getMessage());
       throw new DatabaseException(
         "Write Concern Failed: " + exception.getMessage(), exception
       );
 
     } catch (MongoWriteException exception) {
+      LOG.error("Write Failed: " + exception.getError().getMessage());
       throw new DatabaseException(
         "Write Failed: " + exception.getError().getMessage(), exception
       );
 
     } catch (MongoException exception) {
+      LOG.error("Unexpected Database Error: " + exception.getMessage());
       throw new DatabaseException(
         "MongoDB Error: " + exception.getMessage(), exception
       );
@@ -214,16 +218,19 @@ public class SupplierRepository {
         throw new Exception("Deletion Failed.");
       }
     } catch (MongoWriteConcernException exception) {
+      LOG.error("Write Concern Failed: " + exception.getMessage());
       throw new DatabaseException(
         "Write Concern Failed: " + exception.getMessage(), exception
       );
 
     } catch (MongoWriteException exception) {
+      LOG.error("Write Failed: " + exception.getError().getMessage());
       throw new DatabaseException(
         "Write Failed: " + exception.getError().getMessage(), exception
       );
 
     } catch (MongoException exception) {
+      LOG.error("Unexpected Database Error: " + exception.getMessage());
       throw new DatabaseException(
         "MongoDB Error: " + exception.getMessage(), exception
       );
