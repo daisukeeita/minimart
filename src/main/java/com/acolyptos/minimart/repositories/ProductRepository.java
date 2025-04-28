@@ -1,5 +1,7 @@
 package com.acolyptos.minimart.repositories;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.bson.types.ObjectId;
 import com.acolyptos.minimart.database.DatabaseProvider;
 import com.acolyptos.minimart.database.MongoDB;
@@ -13,6 +15,7 @@ import com.mongodb.MongoWriteConcernException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.DeleteResult;
 
 public class ProductRepository {
 
@@ -86,6 +89,98 @@ public class ProductRepository {
     } catch (MongoException exception) {
       throw new DatabaseException(
         "MongoDB Error: " + exception.getMessage(), exception
+      );
+    }
+  }
+
+  public List<Product> getProductsByCategory (ObjectId categoryId) {
+    List<Product> products = new ArrayList<>();
+
+    try {
+      for (Product product : 
+      productCollection.find(Filters.eq("categoryId", categoryId))) {
+        products.add(product);  
+      }
+
+      return products;
+
+    } catch (MongoQueryException exception) {
+      throw new DatabaseException(
+        "Query Execution Failed: " + exception.getMessage(), 
+        exception
+      );
+
+    } catch (MongoTimeoutException exception) {
+      throw new DatabaseException(
+        "Database Timeout: " + exception.getMessage(), 
+        exception
+      );
+
+    } catch (MongoException exception) {
+      throw new DatabaseException(
+        "MongoDB Error: " + exception.getMessage(), 
+        exception
+      );
+    }
+  }
+
+  public List<Product> getProductsBySupplier (ObjectId supplierId) {
+    List<Product> products = new ArrayList<>();
+
+    try {
+      for (Product product : 
+      productCollection.find(Filters.eq("supplierId", supplierId))) {
+        products.add(product);  
+      }
+
+      return products;
+
+    } catch (MongoQueryException exception) {
+      throw new DatabaseException(
+        "Query Execution Failed: " + exception.getMessage(), 
+        exception
+      );
+
+    } catch (MongoTimeoutException exception) {
+      throw new DatabaseException(
+        "Database Timeout: " + exception.getMessage(), 
+        exception
+      );
+
+    } catch (MongoException exception) {
+      throw new DatabaseException(
+        "MongoDB Error: " + exception.getMessage(), 
+        exception
+      );
+    }
+  }
+
+  public boolean deleteProduct (ObjectId id) {
+    try {
+      DeleteResult result = productCollection.deleteOne(Filters.eq("_id", id));
+
+      if (result.getDeletedCount() == 0) {
+        throw new ResourceNotFoundException("Product not found.");
+      }
+
+      return true;
+
+    } catch (MongoWriteConcernException exception) {
+      throw new DatabaseException(
+        "Write Concern Failed: " + exception.getMessage(), 
+        exception
+      );
+
+    } catch (MongoWriteException exception) {
+      throw new DatabaseException(
+        "Write Failed: " + exception.getError().getMessage(), 
+        exception
+      );
+
+    } catch (MongoException exception) {
+      throw new DatabaseException(
+        "MongoDB Error: " + exception.getMessage(), 
+        exception
       );
     }
   }
