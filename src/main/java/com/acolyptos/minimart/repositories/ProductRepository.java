@@ -16,6 +16,7 @@ import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.InsertOneResult;
 
 public class ProductRepository {
 
@@ -32,9 +33,10 @@ public class ProductRepository {
       .getCollection("products", Product.class);
   }
 
-  public void insertProduct (Product product) {
+  public ObjectId insertProduct (Product product) {
     try {
-      productCollection.insertOne(product);
+      InsertOneResult result =  productCollection.insertOne(product);
+      return result.getInsertedId().asObjectId().getValue();
 
     } catch (MongoWriteException exception) {
       // Handles issues like duplicate key errors or other data constraints
