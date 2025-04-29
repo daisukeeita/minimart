@@ -1,31 +1,29 @@
 package com.acolyptos.minimart.services;
 
+import org.bson.types.ObjectId;
+import com.acolyptos.minimart.exceptions.AuthenticationException;
+import com.acolyptos.minimart.exceptions.DatabaseException;
+import com.acolyptos.minimart.exceptions.ServiceException;
 import com.acolyptos.minimart.models.Role;
 import com.acolyptos.minimart.models.User;
 import com.acolyptos.minimart.repositories.UserRepository;
-
 import com.acolyptos.minimart.utilities.PasswordUtility;
-import com.acolyptos.minimart.exceptions.DatabaseException;
-import com.acolyptos.minimart.exceptions.ServiceException;
-import com.acolyptos.minimart.exceptions.AuthenticationException;
 
-import org.bson.types.ObjectId;
-
-/*
+/**
  * Service class for managing User-related business logic before database operations.
  * This class provides validation methods before passing the data to UserRepository.
 */
 public class UserService {
   private final UserRepository userRepository;
 
-  /*
+  /**
    * Initializes the UserService and establishes the access to UserRepository.
    */
   public UserService() {
     this.userRepository = new UserRepository();
   }
 
-  /*
+  /**
    * Validates data that will be given and creates a User object before passing it
    * to UserRepository.
    *
@@ -80,12 +78,15 @@ public class UserService {
       return result;
     } catch (DatabaseException exception) {
       System.err.println("Error in service layer: " + exception.getMessage());
-      throw new ServiceException("User creation failed: " + exception.getMessage(), exception);
+      throw new ServiceException(
+        "User creation failed: " + exception.getMessage(), 
+        exception
+      );
     }
 
   }
 
-  /*
+  /**
    * Validates username and password and creates a User object.
    * 
    * @param username - The username of the user to be validated.
