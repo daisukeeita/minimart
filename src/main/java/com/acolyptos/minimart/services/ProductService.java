@@ -23,7 +23,7 @@ public class ProductService {
     this.supplierService = new SupplierService();
   }
 
-  public void insertProduct (
+  public ObjectId insertProduct (
     String name,
     ObjectId categoryId,
     ObjectId supplierId,
@@ -49,7 +49,8 @@ public class ProductService {
     Product product = new Product(name, supplierId, categoryId, stock, price);
 
     try {
-      productRepository.insertProduct(product);
+      ObjectId result =  productRepository.insertProduct(product);
+      return result;
 
     } catch (DatabaseException exception) {
       throw new ServiceException(
