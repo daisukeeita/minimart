@@ -80,6 +80,32 @@ public class CategoryService {
     }
   }
 
+  public Category getCategoryByName (String name) {
+    if (name == null) {
+      LOG.error("Name was not provided.");
+      throw new IllegalArgumentException("Name is required.");
+    }
+
+    try {
+      Category category = categoryRepository.getCategoryByName(name);
+
+      return category;
+    } catch (ResourceNotFoundException exception) {
+      LOG.error("Category was not found in the database");
+      throw new ServiceException(
+        "Category not found: " + exception.getMessage(), 
+        exception
+      );
+
+    } catch (DatabaseException exception) {
+      LOG.error("Error in database: " + exception.getMessage());
+      throw new ServiceException(
+        "Database Error: " + exception.getMessage(), 
+        exception
+      );
+    }
+  }
+
   public List<Category> getAllCategories () {
     try {
       List<Category> categories = categoryRepository.getAllCategories();
