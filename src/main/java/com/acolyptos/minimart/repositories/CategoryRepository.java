@@ -103,6 +103,37 @@ public class CategoryRepository {
     }
   }
 
+  public Category getCategoryByName (String name) {
+    try {
+      Category category = categoryCollection
+        .find(Filters.eq("name", name))
+        .first();
+
+      if (category == null) {
+        throw new ResourceNotFoundException("Category with name: " + name + " not found.");
+      }
+
+      return category;
+    } catch (MongoQueryException exception) {
+      throw new DatabaseException(
+        "Query Excecution Failed: " + exception.getMessage(), 
+        exception
+      );
+
+    } catch (MongoTimeoutException exception) {
+      throw new DatabaseException(
+        "Database Timeout: " + exception.getMessage(), 
+        exception
+      );
+
+    } catch (MongoException exception) {
+      throw new DatabaseException(
+        "MongoDB Error: " + exception.getMessage(), 
+        exception
+      );
+    }
+  }
+
   public List<Category> getAllCategories() {
     List<Category> categories = new ArrayList<>();
 
