@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import com.acolyptos.minimart.exceptions.DatabaseException;
 import com.acolyptos.minimart.models.Category;
-import com.acolyptos.minimart.models.ProductRegistrationHandler;
+import com.acolyptos.minimart.models.ProductRegistrationRequest;
 import com.acolyptos.minimart.models.Supplier;
 import com.acolyptos.minimart.services.CategoryService;
 import com.acolyptos.minimart.services.ProductService;
@@ -43,11 +43,11 @@ public class ProductRegisterHandler implements HttpHandler {
   private void handleAddProduct(HttpExchange exchange) throws IOException {
     Category category;
     Supplier supplier;
-    ProductRegistrationHandler requestProduct;
+    ProductRegistrationRequest requestProduct;
 
     try {
       requestProduct =
-          objectMapper.readValue(exchange.getRequestBody(), ProductRegistrationHandler.class);
+          objectMapper.readValue(exchange.getRequestBody(), ProductRegistrationRequest.class);
 
       boolean validateInputRequest = validateInputRequest(requestProduct.getName(),
           requestProduct.getCategoryName(), requestProduct.getSupplierName(),
