@@ -13,6 +13,10 @@ import com.acolyptos.minimart.repositories.ManagerRepository;
 public class ManagerService {
   private final ManagerRepository managerRepository;
 
+  public ManagerService (ManagerRepository managerRepository) {
+    this.managerRepository = managerRepository;
+  }
+
   /*
    * Initializes the ManagerService and establishes access to EmployeeRepository.
    */
