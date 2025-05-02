@@ -16,6 +16,10 @@ import com.acolyptos.minimart.utilities.PasswordUtility;
 public class UserService {
   private final UserRepository userRepository;
 
+  public UserService (UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
+
   /**
    * Initializes the UserService and establishes the access to UserRepository.
    */
