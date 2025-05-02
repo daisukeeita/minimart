@@ -1,6 +1,6 @@
 package com.acolyptos.minimart.models;
 
-public class ProductRegistrationHandler {
+public class ProductRegistrationRequest {
 
   private String name;
   private String categoryName;
@@ -8,7 +8,7 @@ public class ProductRegistrationHandler {
   private int stock;
   private double price;
 
-  public ProductRegistrationHandler () {}
+  public ProductRegistrationRequest () {}
 
   public String getName() {
     return name;
