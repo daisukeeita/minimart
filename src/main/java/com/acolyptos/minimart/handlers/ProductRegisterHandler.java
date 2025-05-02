@@ -28,13 +28,19 @@ public class ProductRegisterHandler implements HttpHandler {
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   public ProductRegisterHandler(
-    ProductService productService, 
     CategoryService categoryService, 
+    ProductService productService, 
     SupplierService supplierService
   ) {
-    this.productService = Objects.requireNonNull(productService, "Product Service cannot be null.");
     this.categoryService = Objects.requireNonNull(categoryService, "Category Service cannot be null.");
+    this.productService = Objects.requireNonNull(productService, "Product Service cannot be null.");
     this.supplierService = Objects.requireNonNull(supplierService, "Supplier Service cannot be null.");
+  }
+
+  public ProductRegisterHandler () {
+    this.categoryService = new CategoryService();
+    this.productService = new ProductService();
+    this.supplierService = new SupplierService();
   }
 
   @Override
