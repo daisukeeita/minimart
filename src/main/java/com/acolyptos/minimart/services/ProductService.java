@@ -8,19 +8,13 @@ import com.acolyptos.minimart.repositories.ProductRepository;
 
 public class ProductService {
   private final ProductRepository productRepository;
-  private final SupplierService supplierService;
 
-  public ProductService (
-    ProductRepository productRepository, 
-    SupplierService supplierService
-  ) {
+  public ProductService (ProductRepository productRepository) {
     this.productRepository = productRepository;
-    this.supplierService = supplierService;
   }
 
   public ProductService () {
     this.productRepository = new ProductRepository();
-    this.supplierService = new SupplierService();
   }
 
   public ObjectId insertProduct (
