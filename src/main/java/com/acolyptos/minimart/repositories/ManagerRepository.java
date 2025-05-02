@@ -26,6 +26,10 @@ import com.mongodb.client.result.InsertOneResult;
 public class ManagerRepository {
   private final MongoCollection<Manager> managerCollection;
 
+  public ManagerRepository (MongoCollection<Manager> managerCollection) {
+    this.managerCollection = managerCollection;
+  }
+
   /*
    * Initializes the ManagerRepository and estableshes a connection to
    * the "managers" colloection.
