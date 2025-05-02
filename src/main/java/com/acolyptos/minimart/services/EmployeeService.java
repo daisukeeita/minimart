@@ -14,6 +14,10 @@ import com.acolyptos.minimart.repositories.EmployeeRepository;
 public class EmployeeService {
   private final EmployeeRepository employeeRepository;
 
+  public EmployeeService (EmployeeRepository employeeRepository) {
+    this.employeeRepository = employeeRepository;
+  }
+
   /*
    * Initializes the EmployeeService and establishes the access to
    * EmployeeRepository.
