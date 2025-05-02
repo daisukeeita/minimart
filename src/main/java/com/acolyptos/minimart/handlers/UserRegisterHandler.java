@@ -55,10 +55,10 @@ public class UserRegisterHandler implements HttpHandler {
    * Initializes the UserRegisterHandler and establishes the access to
    * UserService, EmployeeService, and ManagerService
    */
-  public UserRegisterHandler() {
-    this.userService = new UserService();
-    this.employeeService = new EmployeeService();
-    this.managerService = new ManagerService();
+  public UserRegisterHandler(UserService userService, EmployeeService employeeService, ManagerService managerService) {
+    this.userService = userService;
+    this.employeeService = employeeService;
+    this.managerService = managerService;
   }
 
   /*
