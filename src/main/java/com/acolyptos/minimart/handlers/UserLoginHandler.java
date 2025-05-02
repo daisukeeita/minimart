@@ -22,8 +22,8 @@ public class UserLoginHandler implements HttpHandler {
   private final UserService userService;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
-  public UserLoginHandler() {
-    this.userService = new UserService();
+  public UserLoginHandler(UserService userService) {
+    this.userService = userService;
   }
 
   /*
